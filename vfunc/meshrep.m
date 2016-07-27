@@ -1,5 +1,5 @@
 function [Xout, Yout, Zout] = meshrep(q,X)
-%meshscale - takes a single vector q and meshgrid vector as input, returns
+%meshrep - takes a single vector q and meshgrid vector as input, returns
 %a grid of just q repeated at every point in space.  Ensure X,Y,Z is 3D and
 %has equal dimensions.
 

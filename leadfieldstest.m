@@ -55,10 +55,10 @@ phx = -sin(phi);
 phy = cos(phi);
 phz = zeros(size(rx));
 
-p = 17; q = 12; s = 17;
+p = 4; q = 4; s = 4;
 
-ntheta = 13;
-theta_t = linspace(0, 2*pi, ntheta);
+ntheta = 180;
+theta_t = linspace(0, pi, ntheta);
 
 sizt = [sizr ntheta];
 vtx = zeros(sizt);
@@ -84,19 +84,19 @@ vtz(xi,yi,zi,:) = cos(theta_t).*thz1 + sin(theta_t).*phz1;
     end
 end
 
-nt = 3;
-quiver3(rx, ry, rz, vtx(:,:,:,nt), vty(:,:,:,nt), vtz(:,:,:,nt));
+% nt = 3;
+% quiver3(rx, ry, rz, vtx(:,:,:,nt), vty(:,:,:,nt), vtz(:,:,:,nt));
 
-% rvect = [rx(p,q,s), ry(p,q,s), rz(p,q,s)];
-% rmult = repmat(rvect, [ntheta 1]);
-% 
-% hold on;
-% quiver3( rmult(:,1), rmult(:,2), rmult(:,3), squeeze(vtx(p,q,s,:)), ...
-%     squeeze(vty(p,q,s,:)), squeeze(vtz(p,q,s,:)));
-% 
-% hold on;
-% plot3( rvect(1), rvect(2), rvect(3),'r*','LineWidth', 4);
-% 
-% hold on;
-% plot3( 0, 0, 0,'c*','LineWidth', 4);
+rvect = [rx(p,q,s), ry(p,q,s), rz(p,q,s)];
+rmult = repmat(rvect, [ntheta 1]);
+
+hold on;
+quiver3( rmult(:,1), rmult(:,2), rmult(:,3), squeeze(vtx(p,q,s,:)), ...
+    squeeze(vty(p,q,s,:)), squeeze(vtz(p,q,s,:)));
+
+hold on;
+plot3( rvect(1), rvect(2), rvect(3),'r*','LineWidth', 4);
+
+hold on;
+plot3( 0, 0, 0,'c*','LineWidth', 4);
 

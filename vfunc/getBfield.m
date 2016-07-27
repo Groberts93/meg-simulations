@@ -55,9 +55,9 @@ Bz_tot = Bz_tot + Bz;
     
 end
 
-% Bx_tot = (Qmag*mu_0/(4*pi))*Bx_tot;
-% By_tot = (Qmag*mu_0/(4*pi))*By_tot;
-% Bz_tot = (Qmag*mu_0/(4*pi))*Bz_tot;
+Bx_tot = (Qmag*mu_0/(4*pi))*Bx_tot;
+By_tot = (Qmag*mu_0/(4*pi))*By_tot;
+Bz_tot = (Qmag*mu_0/(4*pi))*Bz_tot;
 
 
 
