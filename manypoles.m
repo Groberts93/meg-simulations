@@ -3,16 +3,16 @@
 
 clear;
 addpath('vfunc');
-% Q = [1 0 0; -1 0 0];  %Point-like current dipole
+Q = [1 0 0];  %Point-like current dipole
 tic
-n_d = 100;
-Q = randn(n_d,3);
+n_d = 20;
+% Q = randn(n_d,3);
 Q = normrows(Q);
 
-% R0 = [0 -0.75 0.3; 0 -0.75 -0.3]; %Position of current dipole
-R0 = rand(n_d,3) - 0.5*ones(n_d,3);
+R0 = [0 -0.75 0]; %Position of current dipole
+% R0 = rand(n_d,3) - 0.5*ones(n_d,3);
 
-x = linspace(-2, 2, 30);  %Grid size - should be symmetrical
+x = linspace(-2, 2, 8);  %Grid size - should be symmetrical
 
 % GRIDS
 % Create r and start grid centred on 0
@@ -67,8 +67,10 @@ h = slice(rx,ry,rz,B,xsp,ysp,zsp); %Get slice of B-field at sphere points
 set(h,'EdgeAlpha',0);
 set(h,'FaceAlpha',0.6);
 shading interp;
-caxis([-5.6e-16, 5.6e-16]);
+% caxis([-5.6e-16, 5.6e-16]);
+caxis([-8 8]);
 axis tight;
+
 colormap(jet);
 c = colorbar;
 title(['Magnitude of ', bstring, ' component on surface']);
