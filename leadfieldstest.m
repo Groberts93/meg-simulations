@@ -60,29 +60,31 @@ p = 4; q = 4; s = 4;
 ntheta = 180;
 theta_t = linspace(0, pi, ntheta);
 
-sizt = [sizr ntheta];
-vtx = zeros(sizt);
-vty = zeros(sizt);
-vtz = zeros(sizt);
+[vtx, vty, vtz] = dipolefangrid(rx,ry,rz,theta_t);
 
-for xi = 1:sizr(1)
-    for yi = 1:sizr(2)
-        for zi = 1:sizr(3)
-thx1 = thx(xi,yi,zi);
-thy1 = thy(xi,yi,zi);
-thz1 = thz(xi,yi,zi);
-phx1 = phx(xi,yi,zi);
-phy1 = phy(xi,yi,zi);
-phz1 = phz(xi,yi,zi);
-
-
-vtx(xi,yi,zi,:) = cos(theta_t).*thx1 + sin(theta_t).*phx1;
-vty(xi,yi,zi,:) = cos(theta_t).*thy1 + sin(theta_t).*phy1;
-vtz(xi,yi,zi,:) = cos(theta_t).*thz1 + sin(theta_t).*phz1;
-        
-        end
-    end
-end
+% sizt = [sizr ntheta];
+% vtx = zeros(sizt);
+% vty = zeros(sizt);
+% vtz = zeros(sizt);
+% 
+% for xi = 1:sizr(1)
+%     for yi = 1:sizr(2)
+%         for zi = 1:sizr(3)
+% thx1 = thx(xi,yi,zi);
+% thy1 = thy(xi,yi,zi);
+% thz1 = thz(xi,yi,zi);
+% phx1 = phx(xi,yi,zi);
+% phy1 = phy(xi,yi,zi);
+% phz1 = phz(xi,yi,zi);
+% 
+% 
+% vtx(xi,yi,zi,:) = cos(theta_t).*thx1 + sin(theta_t).*phx1;
+% vty(xi,yi,zi,:) = cos(theta_t).*thy1 + sin(theta_t).*phy1;
+% vtz(xi,yi,zi,:) = cos(theta_t).*thz1 + sin(theta_t).*phz1;
+%         
+%         end
+%     end
+% end
 
 % nt = 3;
 % quiver3(rx, ry, rz, vtx(:,:,:,nt), vty(:,:,:,nt), vtz(:,:,:,nt));

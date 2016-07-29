@@ -9,15 +9,29 @@ addpath('sfunc');
 
 load('data/spherepts.mat');  %Load sphere points from EEGMesh - called 
 %EEGPts1, EEGPts2, EEGPts3
+ntheta = 180;
+theta_t = linspace(0,pi,ntheta);
+[rx, ry, rz] = meshgrid(linspace(-0.1,0.1,8));
+[vtx, vty, vtz] = dipolefangrid(rx,ry,rz,theta_t);
 
-Q = [1 1 0];  %Point-like current dipole
-R0 = [0 0.09 0]; %Position of current dipole
+p = 5; q = 4; s = 6;
+
+rvect = [rx(p,q,s), ry(p,q,s), rz(p,q,s)];
+rmult = repmat(rvect, [ntheta 1]);
+
+% R0 = [rmult(:,1), rmult(:,2), rmult(:,3)];
+% Q = [squeeze(vtx(p,q,s,:)), squeeze(vty(p,q,s,:)), squeeze(vtz(p,q,s,:))];
+
+
+Q = [0.7 1 1];  %Point-like current dipole
+Q = normrows(Q);
+R0 = [0 0.045 0.07]; %Position of current dipole
 
 xpts = EEGPts1(:,1);  
 ypts = EEGPts1(:,2);
 zpts = EEGPts1(:,3);
 
-xp = 0.106 * (xpts/20); %Set EEG locations to radius of 10.6cm from origin
+xp = 0.106 * (xpts/20); %Set sensor locations to radius of 10.6cm from origin
 yp = 0.106 * (ypts/20);
 zp = 0.106 * (zpts/20);
 
@@ -50,8 +64,20 @@ Br = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
 Bt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
 Bp = Bx_tot.*phx + By_tot.*phy + Bz_tot.*phz;
 
-%Plot these as scatter3
+%Plot origin and dipoles
+plot3(0, 0, 0,'go','LineWidth',3);  %origin
+hold on;
+
+for ndip = 1:size(Q,1)
+    quiver3(R0(ndip,1), R0(ndip,2), R0(ndip,3), 0.05*Q(ndip,1), 0.05*Q(ndip,2), 0.05*Q(ndip,3), 'b-', 'LineWidth', 1);
+    hold on;
+    plot3(R0(ndip,1), R0(ndip,2), R0(ndip,3),'ro','LineWidth',2);
+hold on;
+    
+end
+
+%Plot sensors as scatter3
 scattersize = 50*ones(size(Br));
-scatter3(xp, yp, zp, scattersize, Bp, 'filled');
+scatter3(xp, yp, zp, scattersize, Br, 'filled');
 colorbar;
 
