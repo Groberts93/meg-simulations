@@ -7,7 +7,7 @@ addpath('vfunc');
 addpath('sfunc');
 
 load('data/spherepts.mat');
-Q = [1 0 0];  %Point-like current dipole
+Q = [1 1 0];  %Point-like current dipole
 R0 = [0 0.09 0]; %Position of current dipole
 
 xpts = EEGPts1(:,1);
