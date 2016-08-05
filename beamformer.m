@@ -12,18 +12,22 @@ addpath('vfunc');
 
 %load data, initialise grid
 % load('data/bdata0_0p045_0p07.mat');
-load('data/bdata3.mat');
+% load('data/data_2dips.mat');
+load('data/bdata_3dips.mat');
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 180;
-theta_t = linspace(0,pi,180);
+n_theta = 40;
+theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);
 
+Br = Br.*1e15;
+
 nch = size(Br,1);
-nt = 100;
-t = ones(1, nt);  %time - assume no change of B-field with time
+f = 600;
+nt = 300*f;
+t = randn(1, nt);  %time - assume normal distributed around zero
 
 %init points and get normal vectors
 R = sqrt(xp.^2 + yp.^2 + zp.^2);  %calculate |r| at each point
@@ -35,10 +39,11 @@ erz = zp./R;
 
 
 
-B = Br*t + 5e-15*randn(nch,nt);
+B = Br*t + 100*randn(nch,nt);
 C = cov(B');
 Cinv = inv(C);
-Z = zeros(sizr,1);
+Z = zeros(sizr(1),sizr(1),sizr(1),n_theta);
+maxz = zeros(sizr(1),sizr(1));
 
 [~,Ix] = min(abs(rx(:)));
 [~,Iy] = min(abs(ry(:) - 0.045));
@@ -48,9 +53,11 @@ Z = zeros(sizr,1);
 [yi, yj, yk] = ind2sub(sizr,Iy);
 [zi, zj, zk] = ind2sub(sizr,Iz);
 
-for xprb = 4:4
-    for yprb = 4:4
-        for zprb = 4:4
+
+
+for xprb = 1:sizr(1)
+    for yprb = 1:sizr(1)
+        for zprb = 1:sizr(1)
             
             for tprb = 1:n_theta
                
@@ -60,11 +67,17 @@ for xprb = 4:4
 %                 
 %                 R0 = [rx(xprb, yprb, zprb), ry(xprb, yprb, zprb), rz(xprb, yprb, zprb)];
 
-                Q = [vtx(xi, xj, xk, tprb), ...
-                    vty(yi, yj, yk, tprb), ...
-                    vtz(zi, zj, zk, tprb)];
+%                 Q = [vtx(xi, xj, xk, tprb), ...
+%                     vty(yi, yj, yk, tprb), ...
+%                     vtz(zi, zj, zk, tprb)];
+%                 
+%                 R0 = [rx(xi, xj, xk), ry(yi, yj, yk), rz(zi, zj, zk)];
+
+                Q = [vtx(xprb, yprb, zprb, tprb), ...
+                    vty(xprb, yprb, zprb, tprb), ...
+                    vtz(xprb, yprb, zprb, tprb)];
                 
-                R0 = [rx(xi, xj, xk), ry(yi, yj, yk), rz(zi, zj, zk)];
+                R0 = [rx(xprb, yprb, zprb), ry(xprb, yprb, zprb), rz(xprb, yprb, zprb)];
 
                 %need to get lead field here
                 %Calculate components of B-field at every point in EEG montage
@@ -74,12 +87,29 @@ for xprb = 4:4
                 Lr = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
                 
                 Wtr = (Lr'*Cinv)/(Lr'*Cinv*Lr);
-                Z(tprb) = (Wtr*C*(Wtr'))/(Wtr*Wtr');
+                Z(xprb,yprb,zprb,tprb) = (Wtr*C*(Wtr'))/(Wtr*Wtr');
+              
                 
             end
-            
+            maxz(xprb, yprb, zprb) = max(abs(Z(xprb, yprb, zprb,:)));
         end
     end
 end
 
-plot(Z);
+% plot(Z(27,:));
+% [~, theta_max] = max(Z(27,:));
+% disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
+
+figure;
+h = imagesc(maxz(:,:,27));
+v = caxis;
+
+figure;
+for i = 1:30
+subplot(5,6,i);
+imagesc(maxz(:,:,i),v);
+end
+
+% figure;
+% plot(maxz);
+% [~, ind] = max(maxz)

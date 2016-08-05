@@ -14,18 +14,25 @@ theta_t = linspace(0,pi,ntheta);
 [rx, ry, rz] = meshgrid(linspace(-0.1,0.1,8));
 [vtx, vty, vtz] = dipolefangrid(rx,ry,rz,theta_t);
 
-p = 5; q = 4; s = 6;
-
-rvect = [rx(p,q,s), ry(p,q,s), rz(p,q,s)];
-rmult = repmat(rvect, [ntheta 1]);
+% p = 5; q = 4; s = 6;
+% 
+% rvect = [rx(p,q,s), ry(p,q,s), rz(p,q,s)];
+% rmult = repmat(rvect, [ntheta 1]);
 
 % R0 = [rmult(:,1), rmult(:,2), rmult(:,3)];
 % Q = [squeeze(vtx(p,q,s,:)), squeeze(vty(p,q,s,:)), squeeze(vtz(p,q,s,:))];
 
 
-Q = [0.7 1 1];  %Point-like current dipole
+% Q = [0.7 1 1];  %Point-like current dipole
+% Q = normrows(Q);
+% R0 = [0 0.045 0.07]; %Position of current dipole
+
+Q = [1 0 0; -1 0 0; 1 1 1];  %Point-like current dipole
 Q = normrows(Q);
-R0 = [0 0.045 0.07]; %Position of current dipole
+R0 = [0.02 0.045 0.07; -0.02 -0.045 0.07; 0.04 -0.040 0.073]; %Position of current dipole
+
+% proj_angle = getprojangle(Q,R0) + 90;
+% disp(['Projection angle is ', num2str(proj_angle)]);
 
 xpts = EEGPts1(:,1);  
 ypts = EEGPts1(:,2);
