@@ -12,13 +12,13 @@ addpath('vfunc');
 
 %load data, initialise grid
 % load('data/bdata0_0p045_0p07.mat');
-% load('data/data_2dips.mat');
-load('data/bdata6.mat');
+load('data/data_2dips.mat');
+% load('data/bdata6.mat');
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 90;
+n_theta = 4;
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);
 
@@ -59,9 +59,9 @@ dlocz = 0.07;
 
 
 
-for xprb = 15:15
+for xprb = 1:30
     for yprb = 1:30
-        for zprb = 27:27
+        for zprb = 1:30
             
             for tprb = 1:n_theta
                
@@ -100,21 +100,21 @@ for xprb = 15:15
     end
 end
 
-theta_data_max_z = squeeze(Z(15,23,27,:));
-plot(theta_data_max_z);
-[~, theta_max] = max(theta_data_max_z);
-disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
-
-% figure;
-% h = imagesc(maxz(:,:,27));
-% v = caxis;
-
-% figure;
-% for i = 1:30
-% subplot(5,6,i);
-% imagesc(maxz(:,:,i),v);
-% end
+% theta_data_max_z = squeeze(Z(15,23,27,:));
+% plot(theta_data_max_z);
+% [~, theta_max] = max(theta_data_max_z);
+% disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
 
 figure;
-plot(squeeze(maxz(15,:,27)));
-[~, ind] = max(maxz)
+h = imagesc(maxz(:,:,27));
+v = caxis;
+
+figure;
+for i = 1:30
+subplot(5,6,i);
+imagesc(maxz(:,:,i),v);
+end
+
+% figure;
+% plot(squeeze(maxz(15,:,27)));
+% [~, ind] = max(maxz)
