@@ -27,12 +27,15 @@ theta_t = linspace(0,pi,ntheta);
 % Q = normrows(Q);
 % R0 = [0 0.045 0.07]; %Position of current dipole
 
-Q = [1 0 0; -1 0 0; 1 1 1];  %Point-like current dipole
+Q = [1 0 0]; %; -1 0 0; 1 1 1];  %Point-like current dipole
 Q = normrows(Q);
-R0 = [0.02 0.045 0.07; -0.02 -0.045 0.07; 0.04 -0.040 0.073]; %Position of current dipole
 
-% proj_angle = getprojangle(Q,R0) + 90;
-% disp(['Projection angle is ', num2str(proj_angle)]);
+R0 = [0.00 0.045 0.07];
+% R0 = [0.00 0.09 0];
+% R0 = [0.02 0.045 0.07; -0.02 -0.045 0.07; 0.04 -0.040 0.073]; %Position of current dipole
+
+proj_angle = getprojangle(Q,R0) + 90;
+disp(['Projection angle is ', num2str(proj_angle)]);
 
 xpts = EEGPts1(:,1);  
 ypts = EEGPts1(:,2);
