@@ -18,7 +18,7 @@ load('data/bdata_3dips.mat');
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 40;
+n_theta = 4;
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);
 
