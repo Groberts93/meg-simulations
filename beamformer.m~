@@ -12,8 +12,15 @@ addpath('vfunc');
 
 %load data, initialise grid
 % load('data/bdata0_0p045_0p07.mat');
-load('data/bdata3.mat');
-% load('data/bdata6.mat');
+% load('data/data_2dips.mat');
+load('data/bdata_dip_right.mat');
+Br1 = Br;
+load('data/bdata_dip_left.mat');
+Br2 = Br;
+
+Br = [Br1, Br2];
+
+
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 sizr = size(rx);
 
@@ -27,7 +34,8 @@ Br = Br.*1e15;
 nch = size(Br,1);
 f = 600;
 nt = 300*f;
-t = randn(1, nt);  %time - assume normal distributed around zero
+t1 = randn(1, nt);  %time - assume normal distributed around zero
+t2 = randn(1, nt);
 
 %init points and get normal vectors
 R = sqrt(xp.^2 + yp.^2 + zp.^2);  %calculate |r| at each point
@@ -39,11 +47,11 @@ erz = zp./R;
 
 
 
-B = Br*t + 40*randn(nch,nt);
+B = Br(:,1)*t1 + Br(:,2)*t2 + 200*randn(nch,nt);
 C = cov(B');
 Cinv = inv(C);
 Z = zeros(sizr(1),sizr(1),sizr(1),n_theta);
-maxz = zeros(sizr(1),sizr(1));
+maxz = zeros(sizr(1),sizr(1),sizr(1));
 
 dlocx = 0;
 dlocy = 0.045;
@@ -64,8 +72,8 @@ dlocz = 0.07;
 
 
 
-for xprb = 15:15
-    for yprb = 23:23
+for xprb = 1:30
+    for yprb = 1:30
         for zprb = 27:27
             
             for tprb = 1:n_theta
@@ -100,7 +108,7 @@ for xprb = 15:15
               
                 
             end
-            [maxz(xprb, yprb, zprb) = max(abs(Z(xprb, yprb, zprb,:)));
+            maxz(xprb, yprb, zprb) = max(abs(Z(xprb, yprb, zprb,:)));
         end
     end
 end
@@ -112,7 +120,9 @@ disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
 
 % figure;
 % h = imagesc(maxz(:,:,27));
-% v = caxis;
+% minz = min(min(min(min(Z))));
+% maxmaxz = max(max(max(maxz)));
+% v = [minz maxmaxz];
 % 
 % figure;
 % for i = 1:30

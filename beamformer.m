@@ -12,13 +12,20 @@ addpath('vfunc');
 
 %load data, initialise grid
 % load('data/bdata0_0p045_0p07.mat');
-load('data/data_2dips.mat');
-% load('data/bdata6.mat');
+% load('data/data_2dips.mat');
+load('data/bdata_alt.mat');
+Br1 = Br;
+load('data/bdata_r1.mat');
+Br2 = Br;
+
+Br = [Br1, Br2];
+
+
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 4;
+n_theta = 180;
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);
 
@@ -27,7 +34,8 @@ Br = Br.*1e15;
 nch = size(Br,1);
 f = 600;
 nt = 300*f;
-t = randn(1, nt);  %time - assume normal distributed around zero
+t1 = randn(1, nt);  %time - assume normal distributed around zero
+t2 = randn(1, nt);
 
 %init points and get normal vectors
 R = sqrt(xp.^2 + yp.^2 + zp.^2);  %calculate |r| at each point
@@ -39,7 +47,7 @@ erz = zp./R;
 
 
 
-B = Br*t + 200*randn(nch,nt);
+B = Br(:,1)*t1 + Br(:,2)*t2 + 200*randn(nch,nt);
 C = cov(B');
 Cinv = inv(C);
 Z = zeros(sizr(1),sizr(1),sizr(1),n_theta);
@@ -66,7 +74,7 @@ dlocz = 0.07;
 
 for xprb = 1:30
     for yprb = 1:30
-        for zprb = 27:27
+        for zprb = 1:30
             
             for tprb = 1:n_theta
                
@@ -112,7 +120,9 @@ end
 
 figure;
 h = imagesc(maxz(:,:,27));
-v = caxis;
+minz = min(min(min(min(Z))));
+maxmaxz = max(max(max(maxz)));
+v = [minz maxmaxz];
 
 figure;
 for i = 1:30
