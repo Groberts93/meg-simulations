@@ -33,9 +33,9 @@ vtx = zeros(sizt);
 vty = zeros(sizt);
 vtz = zeros(sizt);
 
-for zi = 1:sizr(1)
+for xi = 1:sizr(1)
     for yi = 1:sizr(2)
-        for xi = 1:sizr(3)
+        for zi = 1:sizr(3)
 % thx1 = thx(xi,yi,zi);
 % thy1 = thy(xi,yi,zi);
 % thz1 = thz(xi,yi,zi);
@@ -51,13 +51,13 @@ phy1 = phy(xi,yi,zi);
 phz1 = phz(xi,yi,zi);
 
 
-vtx(xi,yi,zi,:) = cos(theta_t).*thx1 + sin(theta_t).*phx1;
-vty(xi,yi,zi,:) = cos(theta_t).*thy1 + sin(theta_t).*phy1;
-vtz(xi,yi,zi,:) = cos(theta_t).*thz1 + sin(theta_t).*phz1;
+% vtx(xi,yi,zi,:) = cos(theta_t).*thx1 + sin(theta_t).*phx1;
+% vty(xi,yi,zi,:) = cos(theta_t).*thy1 + sin(theta_t).*phy1;
+% vtz(xi,yi,zi,:) = cos(theta_t).*thz1 + sin(theta_t).*phz1;
 
-% vtx(xi,yi,zi,:) = thx1;
-% vty(xi,yi,zi,:) = thy1;
-% vtz(xi,yi,zi,:) = thz1;
+vtx(xi,yi,zi,:) = phx1;
+vty(xi,yi,zi,:) = phy1;
+vtz(xi,yi,zi,:) = phz1;
         
         end
     end

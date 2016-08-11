@@ -69,6 +69,7 @@ Bt = meshdot2(Bx,By,Bz,thx,thy,thz);
 Bp = meshdot2(Bx,By,Bz,phx,phy,phz);
 
 quiver3(X2,Y2,Z2,U2,V2,W2,'LineWidth',2);  %Plot field in blue
+% quiver3(Rx,Ry,Rz,thx,thy,thz,'LineWidth',2);  %Plot field in blue
 hold on;
 quiver3(Rq(1),Rq(2),Rq(3),Q(1),Q(2),Q(3),1.0,'r-','LineWidth',2);
 %Plot dipole in red
@@ -79,7 +80,7 @@ set(h,'EdgeAlpha',0);
 set(h,'FaceAlpha',0.6);
 shading interp
 caxis([-5.6e-16, 5.6e-16]);
-axis tight;
+axis equal;
 colormap(jet);
 c = colorbar;
 title('Vector plot of B-field and magnitude of component on surface');

@@ -13,21 +13,23 @@ addpath('vfunc');
 %load data, initialise grid
 % load('data/bdata0_0p045_0p07.mat');
 % load('data/data_2dips.mat');
-load('data/bdata_alt.mat');
+load('data/b_test_102.mat');
 Br1 = Br;
-load('data/bdata_r1.mat');
+load('data/b_test_100_556.mat');
 Br2 = Br;
+load('data/b_test_110_m546.mat');
+Br3 = Br;
 
-Br = [Br1, Br2];
+Br = [Br1, Br2, Br3];
 
 
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 180;
+n_theta = 5;
 theta_t = linspace(0,pi,n_theta);
-[vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);
+[vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);  %ALSO SWAPPED HERE
 
 Br = Br.*1e15;
 
@@ -36,6 +38,7 @@ f = 600;
 nt = 300*f;
 t1 = randn(1, nt);  %time - assume normal distributed around zero
 t2 = randn(1, nt);
+t3 = randn(1, nt);
 
 %init points and get normal vectors
 R = sqrt(xp.^2 + yp.^2 + zp.^2);  %calculate |r| at each point
@@ -46,15 +49,16 @@ ery = yp./R;
 erz = zp./R;
 
 
-
-B = Br(:,1)*t1 + Br(:,2)*t2 + 200*randn(nch,nt);
+% 
+B = Br(:,1)*t1 + Br(:,2)*t2 + Br(:,3)*t3 + 100*randn(nch,nt);
+% B = Br(:,1)*t1 + Br(:,2)*t2 + 100*randn(nch,nt);
 C = cov(B');
 Cinv = inv(C);
 Z = zeros(sizr(1),sizr(1),sizr(1),n_theta);
 maxz = zeros(sizr(1),sizr(1),sizr(1));
 
-dlocx = 0;
-dlocy = 0.045;
+dlocx = 0.045;
+dlocy = 0.00;
 dlocz = 0.07;
 
 % dlocx = 0.02;
@@ -70,7 +74,9 @@ dlocz = 0.07;
 [yi, yj, yk] = ind2sub(sizr,Iy);
 [zi, zj, zk] = ind2sub(sizr,Iz);
 
-
+xpt = max([xi, xj, xk]);
+ypt = max([yi, yj, yk]);
+zpt = max([zi, zj, zk]);
 
 for xprb = 1:30
     for yprb = 1:30
@@ -78,17 +84,21 @@ for xprb = 1:30
             
             for tprb = 1:n_theta
                
-%                 Q = [vtx(xprb, yprb, zprb, tprb), ...
-%                     vty(xprb, yprb, zprb, tprb), ...
-%                     vtz(xprb, yprb, zprb, tprb)];
-%                 
-%                 R0 = [rx(xprb, yprb, zprb), ry(xprb, yprb, zprb), rz(xprb, yprb, zprb)];
-
-                Q = [vtx(xi, xprb, xk, tprb), ...
-                    vty(yprb, yj, yk, tprb), ...
-                    vtz(zi, zj, zprb, tprb)];
+                Q = [vtx(xprb, yprb, zprb, tprb), ...
+                    vty(xprb, yprb, zprb, tprb), ...
+                    vtz(xprb, yprb, zprb, tprb)];
                 
-                R0 = [rx(xi, xprb, xk), ry(yprb, yj, yk), rz(zi, zj, zprb)];
+%                 if (tprb == 90)
+%                     Q
+%                 end
+%                 
+                R0 = [rx(xprb, yprb, zprb), ry(xprb, yprb, zprb), rz(xprb, yprb, zprb)];
+
+%                 Q = [vtx(xi, xprb, xk, tprb), ...
+%                     vty(yprb, yj, yk, tprb), ...
+%                     vtz(zi, zj, zprb, tprb)];
+                
+%                 R0 = [rx(xi, xprb, xk), ry(yprb, yj, yk), rz(zi, zj, zprb)];
 
 %                 Q = [vtx(xprb, yprb, zprb, tprb), ...
 %                     vty(xprb, yprb, zprb, tprb), ...
@@ -113,20 +123,21 @@ for xprb = 1:30
     end
 end
 
-% theta_data_max_z = squeeze(Z(15,23,27,:));
-% plot(theta_data_max_z);
-% [~, theta_max] = max(theta_data_max_z);
-% disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
+theta_data_max_z = squeeze(Z(xpt,ypt,zpt,:));
+plot(theta_data_max_z);
+[~, theta_max] = max(theta_data_max_z);
+disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
 
 figure;
-h = imagesc(maxz(:,:,27));
+h = imagesc(maxz(:,:,zpt));
 minz = min(min(min(min(Z))));
 maxmaxz = max(max(max(maxz)));
 v = [minz maxmaxz];
+colorbar;
 
 figure;
 for i = 1:30
-subplot(5,6,i);
+subplot(6,5,i);
 imagesc(maxz(:,:,i),v);
 end
 
