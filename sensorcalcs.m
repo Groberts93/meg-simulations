@@ -7,12 +7,17 @@ clear;
 addpath('vfunc');
 addpath('sfunc');
 
+user_save_data = 0;  %Change this to 1 if you want to save the Bdata - will
+%save dipole location, orientation, and Bdata (with xp, yp, zp)
+
 load('data/spherepts.mat');  %Load sphere points from EEGMesh - called 
 %EEGPts1, EEGPts2, EEGPts3
 ntheta = 180;
 theta_t = linspace(0,pi,ntheta);
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 [vtx, vty, vtz] = dipolefangrid(rx,ry,rz,theta_t);
+
+%debugging the dipole fan
 % 
 % p = 15; q = 23; s = 27;
 % 
@@ -23,23 +28,19 @@ theta_t = linspace(0,pi,ntheta);
 % Q = [squeeze(vtx(p,q,s,:)), squeeze(vty(p,q,s,:)), squeeze(vtz(p,q,s,:))];
 
 
-
-%THIS IS PREVIOUS DIPOLE
-% Q = [1 0 0];  %Point-like current dipole
-% Q = normrows(Q);
-% 
-% R0 = [0.00 0.045 0.07];
-
-Q = [1 1 0];
+Q = [9 0 1; 0 -1 0];  %Point-like current dipole
 Q = normrows(Q);
-R0 = [-0.05 0.04 0.06];
 
+R0 = [0.00 0.045 0.07; 0.00 -0.045 0.07];
+anglestr = [' '];
 
-% R0 = [0.00 0.09 0];
-% R0 = [-0.045 0 0.07];  %; 0.04 -0.040 0.073]; %Position of current dipole
-% 
+%Get projection angles and display
 proj_angle = getprojangle(Q,R0) + 90;
-disp(['Projection angle is ', num2str(proj_angle)]);
+for n = 1:size(proj_angle,1)
+anglestr = [anglestr, '  ', sprintf('%g',proj_angle(n,1))];
+end
+
+disp(anglestr);
 
 xpts = EEGPts1(:,1);  
 ypts = EEGPts1(:,2);
@@ -99,3 +100,9 @@ xlabel('x axis');
 ylabel('y axis');
 zlabel('z axis');
 
+%SAVE THAT DATA
+if (user_save_data == 1)
+    ntime = now;
+    datastr = ['newdata/', 'B_', datestr(ntime, 1), '-', datestr(ntime,13), '.mat'];
+   save(datastr, 'Br', 'xp', 'yp', 'zp', 'R0', 'Q');
+end

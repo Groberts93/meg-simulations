@@ -13,7 +13,7 @@ addpath('vfunc');
 %load data, initialise grid
 % load('data/bdata0_0p045_0p07.mat');
 % load('data/data_2dips.mat');
-load('data/b_test_102.mat');
+load('data/b_test_901.mat');
 Br1 = Br;
 load('data/b_test_100_556.mat');
 Br2 = Br;
@@ -23,11 +23,11 @@ Br3 = Br;
 Br = [Br1, Br2, Br3];
 
 
-[rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
+[rx, ry, rz] = meshgrid(linspace(-0.085,0.085,31));
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 5;
+n_theta = 30;
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);  %ALSO SWAPPED HERE
 
@@ -50,7 +50,7 @@ erz = zp./R;
 
 
 % 
-B = Br(:,1)*t1 + Br(:,2)*t2 + Br(:,3)*t3 + 100*randn(nch,nt);
+B = Br(:,1)*t1 + Br(:,2)*t2 + Br(:,3)*t3 + 200*randn(nch,nt);
 % B = Br(:,1)*t1 + Br(:,2)*t2 + 100*randn(nch,nt);
 C = cov(B');
 Cinv = inv(C);
@@ -78,9 +78,9 @@ xpt = max([xi, xj, xk]);
 ypt = max([yi, yj, yk]);
 zpt = max([zi, zj, zk]);
 
-for xprb = 1:30
-    for yprb = 1:30
-        for zprb = 1:30
+for xprb = 1:31
+    for yprb = 1:31
+        for zprb = 1:31
             
             for tprb = 1:n_theta
                
@@ -135,11 +135,11 @@ maxmaxz = max(max(max(maxz)));
 v = [minz maxmaxz];
 colorbar;
 
-figure;
-for i = 1:30
-subplot(6,5,i);
-imagesc(maxz(:,:,i),v);
-end
+% figure;
+% for i = 1:30
+% subplot(6,5,i);
+% imagesc(maxz(:,:,i),v);
+% end
 
 % figure;
 % plot(squeeze(maxz(15,:,27)));
