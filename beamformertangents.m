@@ -7,33 +7,40 @@ addpath('bfunc');
 addpath('sfunc');
 addpath('vfunc');
 
-% Q = [1 0 0];  %Point-like current dipole
-% R0 = [0 0.045 0.07]; %Position of current dipole
-
 %load data, initialise grid
-% load('data/bdata0_0p045_0p07.mat');
-% load('data/data_2dips.mat');
-load('data/b_test_901.mat');
+load('newdata/B_15-Aug-2016-15:33:08.mat');
 Br1 = Br;
-load('data/b_test_100_556.mat');
+Bt1 = Bt;
+load('newdata/B_15-Aug-2016-15:33:37.mat');
 Br2 = Br;
-load('data/b_test_110_m546.mat');
+Bt2 = Bt;
+load('newdata/B_15-Aug-2016-15:33:47.mat');
 Br3 = Br;
+Bt3 = Bt;
 
 Br = [Br1, Br2, Br3];
+Bt = [Bt1, Bt2, Bt3];
+
+Brt1 = [Br1; Bt1];
+Brt2 = [Br2; Bt2];
+Brt3 = [Br3; Bt3];
 
 
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,31));
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 40;
+n_theta = 180;
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);  %ALSO SWAPPED HERE
+% 
+% Br = Br.*1e15;
+% Bt = Bt.*1e15;
+Brt1 = Brt1.*1e15;
+Brt2 = Brt2.*1e15;
+Brt3 = Brt3.*1e15;
 
-Br = Br.*1e15;
-
-nch = size(Br,1);
+nch = size(Brt1,1);
 f = 600;
 nt = 300*f;
 t1 = randn(1, nt);  %time - assume normal distributed around zero
@@ -48,10 +55,22 @@ erx = xp./R;
 ery = yp./R;
 erz = zp./R;
 
+%Get theta and phi for each point
+theta = acos(zp./R);
+phi = atan2(yp,xp);
 
-% 
-B = Br(:,1)*t1 + Br(:,2)*t2 + Br(:,3)*t3 + 200*randn(nch,nt);
-% B = Br(:,1)*t1 + Br(:,2)*t2 + 100*randn(nch,nt);
+%Get theta unit vector at every point
+thx = cos(theta).*cos(phi);
+thy = cos(theta).*sin(phi);
+thz = -sin(theta);
+
+%Get phi unit vector at every point
+phx = -sin(phi);
+phy = cos(phi);
+phz = zeros(size(xp));
+
+
+B = Brt1*t1 + Brt2*t2 + Brt3*t3 + 200*randn(nch,nt);
 C = cov(B');
 Cinv = inv(C);
 Z = zeros(sizr(1),sizr(1),sizr(1),n_theta);
@@ -61,10 +80,7 @@ dlocx = 0.045;
 dlocy = 0.00;
 dlocz = 0.07;
 
-% dlocx = 0.02;
-% dlocy = 0.03;
-% dlocz = 0.06;
-
+%x and y coordinates get switched here.  watch out
 
 [~,Ix] = min(abs(rx(:) - dlocx));
 [~,Iy] = min(abs(ry(:) - dlocy));
@@ -80,7 +96,7 @@ zpt = max([zi, zj, zk]);
 
 for xprb = 1:31
     for yprb = 1:31
-        for zprb = 1:31
+        for zprb = zpt:zpt
             
             for tprb = 1:n_theta
                
@@ -112,8 +128,11 @@ for xprb = 1:31
                 
                 %Get radial, theta, phi components
                 Lr = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
+                Lt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
                 
-                Wtr = (Lr'*Cinv)/(Lr'*Cinv*Lr);
+                L = [Lr; Lt];
+                
+                Wtr = (L'*Cinv)/(L'*Cinv*L);
                 Z(xprb,yprb,zprb,tprb) = (Wtr*C*(Wtr'))/(Wtr*Wtr');
               
                 
@@ -123,6 +142,7 @@ for xprb = 1:31
     end
 end
 
+figure;
 theta_data_max_z = squeeze(Z(xpt,ypt,zpt,:));
 plot(theta_data_max_z);
 [~, theta_max] = max(theta_data_max_z);
@@ -135,12 +155,12 @@ maxmaxz = max(max(max(maxz)));
 v = [minz maxmaxz];
 colorbar;
 
-figure;
-for i = 1:30
-subplot(6,5,i);
-imagesc(maxz(:,:,i),v);
-end
+% figure;
+% for i = 1:30
+% subplot(6,5,i);
+% imagesc(maxz(:,:,i),v);
+% end
 
-figure;
-plot(squeeze(maxz(15,:,27)));
-[~, ind] = max(maxz)
+% figure;
+% plot(squeeze(maxz(15,:,27)));
+% [~, ind] = max(maxz)

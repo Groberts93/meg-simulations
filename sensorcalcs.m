@@ -7,7 +7,7 @@ clear;
 addpath('vfunc');
 addpath('sfunc');
 
-user_save_data = 0;  %Change this to 1 if you want to save the Bdata - will
+user_save_data = 1;  %Change this to 1 if you want to save the Bdata - will
 %save dipole location, orientation, and Bdata (with xp, yp, zp)
 
 load('data/spherepts.mat');  %Load sphere points from EEGMesh - called 
@@ -28,10 +28,10 @@ theta_t = linspace(0,pi,ntheta);
 % Q = [squeeze(vtx(p,q,s,:)), squeeze(vty(p,q,s,:)), squeeze(vtz(p,q,s,:))];
 
 
-Q = [9 0 1; 0 -1 0];  %Point-like current dipole
+Q = [1 0 0];  %Point-like current dipole
 Q = normrows(Q);
 
-R0 = [0.00 0.045 0.07; 0.00 -0.045 0.07];
+R0 = [-0.03 -0.04 0.07];
 anglestr = [' '];
 
 %Get projection angles and display
@@ -93,7 +93,7 @@ end
 
 %Plot sensors as scatter3
 scattersize = 50*ones(size(Br));
-scatter3(xp, yp, zp, scattersize, Br, 'filled');
+scatter3(xp, yp, zp, scattersize, Bt, 'filled');
 colorbar;
 axis equal;
 xlabel('x axis');
@@ -104,5 +104,5 @@ zlabel('z axis');
 if (user_save_data == 1)
     ntime = now;
     datastr = ['newdata/', 'B_', datestr(ntime, 1), '-', datestr(ntime,13), '.mat'];
-   save(datastr, 'Br', 'xp', 'yp', 'zp', 'R0', 'Q');
+   save(datastr, 'Br', 'Bt', 'xp', 'yp', 'zp', 'R0', 'Q');
 end
