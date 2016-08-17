@@ -7,7 +7,7 @@ clear;
 addpath('vfunc');
 addpath('sfunc');
 
-user_save_data = 1;  %Change this to 1 if you want to save the Bdata - will
+user_save_data = 0;  %Change this to 1 if you want to save the Bdata - will
 %save dipole location, orientation, and Bdata (with xp, yp, zp)
 
 load('data/spherepts.mat');  %Load sphere points from EEGMesh - called 
@@ -31,7 +31,7 @@ theta_t = linspace(0,pi,ntheta);
 Q = [1 0 0];  %Point-like current dipole
 Q = normrows(Q);
 
-R0 = [-0.03 -0.04 0.07];
+R0 = [-0.03 0.04 0.07];
 anglestr = [' '];
 
 %Get projection angles and display

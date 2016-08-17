@@ -27,7 +27,7 @@ Br = [Br1, Br2, Br3];
 sizr = size(rx);
 
 %get dipole orientations at every point on grid
-n_theta = 40;
+n_theta = 180;
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);  %ALSO SWAPPED HERE
 
@@ -135,6 +135,8 @@ minz = min(min(min(min(Z))));
 maxmaxz = max(max(max(maxz)));
 v = [minz maxmaxz];
 colorbar;
+xlabel('x');
+ylabel('y');
 
 % figure;
 % for i = 1:30

@@ -20,27 +20,82 @@ Bt3 = Bt;
 
 Br = [Br1, Br2, Br3];
 Bt = [Bt1, Bt2, Bt3];
+Brt = [Br; Bt];
 
-Brt1 = [Br1; Bt1];
-Brt2 = [Br2; Bt2];
-Brt3 = [Br3; Bt3];
+dlocx = -0.03;
+dlocy = 0.04;
+dlocz = 0.07;
+
+n_theta = 180;
 
 
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,31));
 sizr = size(rx);
 
+rtmode = 0;
+
+while (rtmode > 3 || rtmode < 1)
+    rtmode = input('Enter 1 to use radial components, 2 for tangential components, or 3 for both: ');
+end
+
+bfmode = 0;
+while (bfmode > 3 || bfmode < 1)
+    bfmode = input('Choose mode.  Enter 1 for single voxel, 2 for xy slice at z plane, 3 for full xyz sweep: ');
+end
+
+if (bfmode == 1)
+prompt = {'x coordinate:','y coordinate:' 'z coordinate'};
+dlg_title = 'Single voxel mode.  Enter coordinates';
+num_lines = 1;
+defaultans = {num2str(dlocx),num2str(dlocy),num2str(dlocz)};
+answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+dlocx = str2num(answer{1});
+dlocy = str2num(answer{2});
+dlocz = str2num(answer{3});
+
+elseif (bfmode == 2)
+prompt = {'z layer', 'ntheta'};
+dlg_title = ['xy slice mode.  Enter z-layer from 1-', num2str(sizr(1)), ' and ntheta'];
+num_lines = [1 50];
+defaultans = {num2str(28), num2str(n_theta)};
+answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+zslice = str2num(answer{1});
+n_theta = str2num(answer{2});
+
+elseif (bfmode == 3)
+    prompt = {'ntheta'};
+dlg_title = ['Full xyz sweep mode.  Enter ntheta '];
+num_lines = [1 50];
+defaultans = {num2str(n_theta)};
+answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+n_theta = str2num(answer{1});
+end
+
+dlocy = -dlocy;  %Negate y coordinate.  Now you can enter dlocx, dlocy and dlocz as
+%if they were the xyz coordinates of the dipole in sensorcalcs.m and
+%everything should square up with the original coordinates.  I think.
+
+
+
+
 %get dipole orientations at every point on grid
-n_theta = 180;
+
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);  %ALSO SWAPPED HERE
 % 
-% Br = Br.*1e15;
-% Bt = Bt.*1e15;
-Brt1 = Brt1.*1e15;
-Brt2 = Brt2.*1e15;
-Brt3 = Brt3.*1e15;
+Br = Br.*1e15;
+Bt = Bt.*1e15;
+Brt = Brt.*1e15;
 
-nch = size(Brt1,1);
+if (rtmode == 1)
+    nch = size(Br,1);
+elseif (rtmode == 2)
+    nch = size(Bt,1);
+else
+    nch = size(Brt,1);
+end
+
+% nch = size(Brt,1);
 f = 600;
 nt = 300*f;
 t1 = randn(1, nt);  %time - assume normal distributed around zero
@@ -70,20 +125,25 @@ phy = cos(phi);
 phz = zeros(size(xp));
 
 
-B = Brt1*t1 + Brt2*t2 + Brt3*t3 + 200*randn(nch,nt);
+if (rtmode == 1)
+    B = Br(:,1)*t1 + Br(:,2)*t2 + Br(:,3)*t3 + 200*randn(nch,nt);
+elseif (rtmode == 2)
+    B = Bt(:,1)*t1 + Bt(:,2)*t2 + Bt(:,3)*t3 + 200*randn(nch,nt);
+else
+    B = Brt(:,1)*t1 + Brt(:,2)*t2 + Brt(:,3)*t3 + 200*randn(nch,nt);
+end
+
 C = cov(B');
 Cinv = inv(C);
 Z = zeros(sizr(1),sizr(1),sizr(1),n_theta);
 maxz = zeros(sizr(1),sizr(1),sizr(1));
 
-dlocx = 0.045;
-dlocy = 0.00;
-dlocz = 0.07;
+
 
 %x and y coordinates get switched here.  watch out
 
-[~,Ix] = min(abs(rx(:) - dlocx));
-[~,Iy] = min(abs(ry(:) - dlocy));
+[~,Iy] = min(abs(rx(:) - dlocx));
+[~,Ix] = min(abs(ry(:) - dlocy));
 [~,Iz] = min(abs(rz(:) - dlocz));
 
 [xi, xj, xk] = ind2sub(sizr,Ix);
@@ -94,9 +154,26 @@ xpt = max([xi, xj, xk]);
 ypt = max([yi, yj, yk]);
 zpt = max([zi, zj, zk]);
 
-for xprb = 1:31
-    for yprb = 1:31
-        for zprb = zpt:zpt
+if (bfmode == 1)
+    xrange = [xpt, xpt];
+    yrange = [ypt, ypt];
+    zrange = [zpt, zpt];
+    zslice = zpt;
+elseif (bfmode == 2)
+    xrange = [1, sizr(1)];
+    yrange = [1, sizr(1)];
+    zrange = [zslice, zslice];
+elseif (bfmode == 3)
+    xrange = [1, sizr(1)];
+    yrange = [1, sizr(1)];
+    zrange = [1, sizr(1)];
+    zslice = zpt;
+end
+
+tic;
+for xprb = xrange(1):xrange(2)
+    for yprb = yrange(1):yrange(2)
+        for zprb = zrange(1):zrange(2)
             
             for tprb = 1:n_theta
                
@@ -127,10 +204,18 @@ for xprb = 1:31
                 [Bx_tot, By_tot, Bz_tot] = pointsBfield(Q,R0,[xp, yp, zp]);
                 
                 %Get radial, theta, phi components
+                if (rtmode == 1)
                 Lr = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
+                L = Lr;
+                elseif (rtmode == 2)
                 Lt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
+                L = Lt;
+                else
+                    Lr = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
+                    Lt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
+                    L = [Lr; Lt];
+                end
                 
-                L = [Lr; Lt];
                 
                 Wtr = (L'*Cinv)/(L'*Cinv*L);
                 Z(xprb,yprb,zprb,tprb) = (Wtr*C*(Wtr'))/(Wtr*Wtr');
@@ -140,26 +225,34 @@ for xprb = 1:31
             maxz(xprb, yprb, zprb) = max(abs(Z(xprb, yprb, zprb,:)));
         end
     end
+    disp(['x slice = ', num2str(xprb)]);
 end
+toc;
+
+% for zn = 1:31
+%     for tn = 1:n_theta
+%    maxz(:,:,zn) = maxz(:,:,zn)';
+%     end
+% end
 
 figure;
-theta_data_max_z = squeeze(Z(xpt,ypt,zpt,:));
+theta_data_max_z = squeeze(Z(xpt,ypt,zslice,:));
 plot(theta_data_max_z);
 [~, theta_max] = max(theta_data_max_z);
 disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
 
 figure;
-h = imagesc(maxz(:,:,zpt));
+h = imagesc(maxz(:,:,zslice));
 minz = min(min(min(min(Z))));
 maxmaxz = max(max(max(maxz)));
 v = [minz maxmaxz];
 colorbar;
 
-% figure;
-% for i = 1:30
-% subplot(6,5,i);
-% imagesc(maxz(:,:,i),v);
-% end
+figure;
+for i = 1:31
+subplot(6,6,i);
+imagesc(maxz(:,:,i),v);
+end
 
 % figure;
 % plot(squeeze(maxz(15,:,27)));
