@@ -8,19 +8,30 @@ addpath('sfunc');
 addpath('vfunc');
 
 %load data, initialise grid
-load('newdata/B_15-Aug-2016-15:33:08.mat');
-Br1 = Br;
-Bt1 = Bt;
-load('newdata/B_15-Aug-2016-15:33:37.mat');
-Br2 = Br;
-Bt2 = Bt;
-load('newdata/B_15-Aug-2016-15:33:47.mat');
-Br3 = Br;
-Bt3 = Bt;
+% load('newdata/B_15-Aug-2016-15:33:08.mat');
+% Br1 = Br;
+% Bt1 = Bt;
+% load('newdata/B_15-Aug-2016-15:33:37.mat');
+% Br2 = Br;
+% Bt2 = Bt;
+% load('newdata/B_15-Aug-2016-15:33:47.mat');
+% Br3 = Br;
+% Bt3 = Bt;
 
-Br = [Br1, Br2, Br3];
-Bt = [Bt1, Bt2, Bt3];
-Brt = [Br; Bt];
+% load('sequencedata/B_22-Aug-2016-13:15:45.mat');
+% load('sequencedata/B_22-Aug-2016-13:22:44.mat');
+% load('sequencedata/B_22-Aug-2016-12:46:49.mat');
+load('sequencedata/B_22-Aug-2016-13:33:20.mat');
+
+ndips = size(R0,1);
+
+% Br = [Br1, Br2, Br3];
+% Bt = [Bt1, Bt2, Bt3];
+% Brt = [Br; Bt];
+
+Br = Br_seq;
+Bt = Bt_seq;
+Brt = [Br_seq; Bt_seq];
 
 dlocx = -0.03;
 dlocy = 0.04;
@@ -83,8 +94,8 @@ dlocy = -dlocy;  %Negate y coordinate.  Now you can enter dlocx, dlocy and dlocz
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);  %ALSO SWAPPED HERE
 % 
-% Br = Br.*1e15;
-% Bt = Bt.*1e15;
+Br = Br.*1e15;
+Bt = Bt.*1e15;
 Brt = Brt.*1e15;
 
 if (rtmode == 1)
@@ -101,6 +112,8 @@ nt = 300*f;
 t1 = randn(1, nt);  %time - assume normal distributed around zero
 t2 = randn(1, nt);
 t3 = randn(1, nt);
+
+tn = randn(ndips, nt);
 
 %init points and get normal vectors
 R = sqrt(xp.^2 + yp.^2 + zp.^2);  %calculate |r| at each point
@@ -124,14 +137,19 @@ phx = -sin(phi);
 phy = cos(phi);
 phz = zeros(size(xp));
 
+B = zeros(nch, nt);
 
-if (rtmode == 1)
-    B = Br(:,1)*t1 + Br(:,2)*t2 + Br(:,3)*t3 + 200*randn(nch,nt);
-elseif (rtmode == 2)
-    B = Bt(:,1)*t1 + Bt(:,2)*t2 + Bt(:,3)*t3 + 200*randn(nch,nt);
-else
-    B = Brt(:,1)*t1 + Brt(:,2)*t2 + Brt(:,3)*t3 + 200*randn(nch,nt);
+for ndip = 1:ndips
+    if (rtmode == 1)
+        B = B + Br(:,ndip)*tn(ndip,:);
+    elseif (rtmode == 2)
+        B = B + Bt(:,ndip)*tn(ndip,:);
+    else
+        B = B + Brt(:,ndip)*tn(ndip,:);
+    end
 end
+
+B = B + 200*randn(nch, nt);
 
 C = cov(B');
 Cinv = inv(C);
@@ -242,16 +260,16 @@ plot(theta_data_max_z);
 disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
 
 figure;
-h = imagesc(maxz(:,:,zslice));
 minz = min(min(min(min(Z))));
 maxmaxz = max(max(max(maxz)));
 v = [minz maxmaxz];
+h = imagesc(maxz(:,:,zslice), v);
 colorbar;
 
 figure;
 for i = 1:31
-subplot(6,6,i);
-imagesc(maxz(:,:,i),v);
+    subplot(6,6,i);
+    imagesc(maxz(:,:,i),v);
 end
 
 % figure;
