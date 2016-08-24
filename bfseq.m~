@@ -25,7 +25,7 @@ addpath('vfunc');
 % load('sequencedata/B_22-Aug-2016-13:33:20.mat');
 
 
-load('sequencedata/85degcrossed.mat');
+load('sequencedata/60deg.mat');
 
 ndips = size(R0,1);
 
@@ -173,7 +173,7 @@ for ndip = 1:ndips
 end
 
 
-B = B + 50*randn(nch, nt);
+B = B + 200*randn(nch, nt);
 
 C = cov(B');
 Cinv = inv(C);
@@ -293,15 +293,10 @@ for xprb = xrange
                 Wtr = (L'*Cinv)/(L'*Cinv*L);
                 Z(xprb,yprb,zprb,tprb) = (Wtr*C*(Wtr'))/(Wtr*Wtr');
                 
-                if (tcmode == 1 && bfmode == 1 && tprb == 1 && ndip <= ndips)
-                    if (sum([xprb, yprb, zprb] == [xtc(ndip), ytc(ndip), ztc(ndip)]) == 3)
-                        
-                        [xprb, yprb, zprb]
-                        [xtc(ndip), ytc(ndip), ztc(ndip)]
-                    Tc(ndip,:) = Wtr*B;
-                    ndip = ndip + 1;
-                    end
-                end
+%                 if (tcmode == 1 && bfmode == 1)
+%                     Tc(ndip,:) = Wtr*B;
+%                     ndip = ndip + 1;
+%                 end
               
                 
             end
@@ -318,10 +313,8 @@ toc;
 %     end
 % end
 
-ccf = corrcoef(Tc(1,:), Tc(2,:))
-
 figure;
-theta_data_max_z = squeeze(Z(xpt,ypt,zslice,:));
+theta_data_max_z = squeeze(Z(10,10,28,:));
 plot(theta_data_max_z);
 [~, theta_max] = max(theta_data_max_z);
 disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);

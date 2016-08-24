@@ -22,8 +22,11 @@ zp = 0.106 * (zpts/20);
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 
 % Q = [1 0 0; 1 0 0; 1 0 0];  %Point-like current dipole
-ndips = 100;
-Q = repmat([1 0 0], ndips, 1);
+ndips = 2;
+% Q = repmat([1 0 0], ndips, 1);
+r_const = 0.08;
+t_const = 85;
+Q = [sind(t_const), 0, -cosd(t_const); sind(t_const), 0, cosd(t_const)];
 Q = normrows(Q);
 Br_seq = zeros(size(xpts,1), ndips);
 Bt_seq = zeros(size(xpts,1), ndips);
@@ -35,8 +38,9 @@ loc_r = randR(:,1).^2 + randR(:,2).^2 + randR(:,3).^2;
 loc_r = sqrt(loc_r);
 randR = randR(loc_r < 0.1, :);
 randR = randR(1:ndips,:);
-% R0 = [-0.03 0.04 0.07; -0.03 -0.04 0.07; 0.05 0.00 0.07];
-R0 = randR;
+% R0 = [-0.03 0.04 0.07; 0.05 0.00 0.07];
+R0 = [r_const*cosd(t_const), 0.00, r_const*sind(t_const); -r_const*cosd(t_const), 0.00, r_const*sind(t_const)]; 
+% R0 = randR;
 
 % anglestr = [' '];
 % 
@@ -85,23 +89,23 @@ Bp = Bx_tot.*phx + By_tot.*phy + Bz_tot.*phz;
 
 %Plot origin and dipoles
 
-% figure;
-% plot3(0, 0, 0,'go','LineWidth',3);  %origin
-% hold on;
-% quiver3(R0(ndip,1), R0(ndip,2), R0(ndip,3), 0.05*Q(ndip,1), 0.05*Q(ndip,2), 0.05*Q(ndip,3), 'b-', 'LineWidth', 1);
-% hold on;
-% plot3(R0(ndip,1), R0(ndip,2), R0(ndip,3),'ro','LineWidth',2);
-% hold on;
+figure;
+plot3(0, 0, 0,'go','LineWidth',3);  %origin
+hold on;
+quiver3(R0(ndip,1), R0(ndip,2), R0(ndip,3), 0.05*Q(ndip,1), 0.05*Q(ndip,2), 0.05*Q(ndip,3), 'b-', 'LineWidth', 1);
+hold on;
+plot3(R0(ndip,1), R0(ndip,2), R0(ndip,3),'ro','LineWidth',2);
+hold on;
 
 %Plot sensors as scatter3
 
-% scattersize = 50*ones(size(Br));
-% scatter3(xp, yp, zp, scattersize, Br, 'filled');
-% colorbar;
-% axis equal;
-% xlabel('x axis');
-% ylabel('y axis');
-% zlabel('z axis');
+scattersize = 50*ones(size(Br));
+scatter3(xp, yp, zp, scattersize, Br, 'filled');
+colorbar;
+axis equal;
+xlabel('x axis');
+ylabel('y axis');
+zlabel('z axis');
 
 Br_seq(:, ndip) = Br;
 Bt_seq(:, ndip) = Bt;
