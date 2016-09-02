@@ -28,10 +28,10 @@ theta_t = linspace(0,pi,ntheta);
 % Q = [squeeze(vtx(p,q,s,:)), squeeze(vty(p,q,s,:)), squeeze(vtz(p,q,s,:))];
 
 
-Q = [0.9397, 0, -0.3420];  %Point-like current dipole
+Q = [-1 0 0];  %Point-like current dipole
 Q = normrows(Q);
 
-R0 =  [0.0274,  0, 0.0752];
+R0 = [-0.03 0.04 0.07];
 anglestr = [' '];
 
 %Get projection angles and display
@@ -93,7 +93,7 @@ end
 
 %Plot sensors as scatter3
 scattersize = 50*ones(size(Br));
-scatter3(xp, yp, zp, scattersize, Bp, 'filled');
+scatter3(xp, yp, zp, scattersize, Bt, 'filled');
 colorbar;
 axis equal;
 xlabel('x axis');
@@ -101,8 +101,7 @@ ylabel('y axis');
 zlabel('z axis');
 
 for npt = 1:size(xp,1)
-   quiver3(xp(npt), yp(npt), zp(npt), 0.02*phx(npt), 0.02*phy(npt), 0.02*phz(npt), 'r-');
-   hold on;
+   quiver
     
     
 end

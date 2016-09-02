@@ -35,8 +35,8 @@ ndips = size(R0,1);
 % Brt = [Br; Bt];
 
 Br = Br_seq;
-Bt = Bt_seq;
-Brt = [Br_seq; Bt_seq];
+Bt = Bp_seq;
+Brt = [Br_seq; Bp_seq];
 
 dlocx = -0.03;
 dlocy = 0.04;
@@ -282,11 +282,11 @@ for xprb = xrange
                 Lr = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
                 L = Lr;
                 elseif (rtmode == 2)
-                Lt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
+                Lt = Bx_tot.*phx + By_tot.*phy + Bz_tot.*phz;
                 L = Lt;
                 else
                     Lr = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
-                    Lt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
+                    Lt = Bx_tot.*phx + By_tot.*phy + Bz_tot.*phz;
                     L = [Lr; Lt];
                 end
                 
@@ -338,13 +338,13 @@ hold on;
 plot(ytc(ztc == zslice), xtc(ztc == zslice), 'rx');
 
 
-figure;
-for i = 1:31
-    subplot(6,6,i);
-    imagesc(maxz(:,:,i),v);
-    hold on;
-    plot(ytc(ztc == i), xtc(ztc == i), 'rx','LineWidth',2);
-end
+% figure;
+% for i = 1:31
+%     subplot(6,6,i);
+%     imagesc(maxz(:,:,i),v);
+%     hold on;
+%     plot(ytc(ztc == i), xtc(ztc == i), 'rx','LineWidth',2);
+% end
 
 % figure;
 % plot(squeeze(maxz(15,:,27)));

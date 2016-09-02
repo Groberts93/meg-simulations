@@ -106,6 +106,7 @@ axis equal;
 xlabel('x axis');
 ylabel('y axis');
 zlabel('z axis');
+
 Br_seq(:, ndip) = Br;
 Bt_seq(:, ndip) = Bt;
 Bp_seq(:, ndip) = Bp;

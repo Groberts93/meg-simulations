@@ -35,8 +35,8 @@ ndips = size(R0,1);
 % Brt = [Br; Bt];
 
 Br = Br_seq;
-Bt = Bt_seq;
-Brt = [Br_seq; Bt_seq];
+Bt = Bp_seq;
+Brt = [Br_seq; Bp_seq];
 
 dlocx = -0.03;
 dlocy = 0.04;

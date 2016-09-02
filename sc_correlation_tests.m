@@ -21,16 +21,21 @@ yp = 0.106 * (ypts/20);
 zp = 0.106 * (zpts/20);
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 
+t_const_vec = linspace(0,90,100);
+
+
+for t_const = t_const_vec
 % Q = [1 0 0; 1 0 0; 1 0 0];  %Point-like current dipole
 ndips = 2;
 % Q = repmat([1 0 0], ndips, 1);
 r_const = 0.08;
-t_const = 70;
+% t_const = 85;
 Q = [sind(t_const), 0, -cosd(t_const); sind(t_const), 0, cosd(t_const)];
 Q = normrows(Q);
 Br_seq = zeros(size(xpts,1), ndips);
 Bt_seq = zeros(size(xpts,1), ndips);
 Bp_seq = zeros(size(xpts,1), ndips);
+
 
 randR =  0.2 * (rand(10000,3) - 0.5);
 randR = randR(randR(:,3) > 0, :);
@@ -89,23 +94,24 @@ Bp = Bx_tot.*phx + By_tot.*phy + Bz_tot.*phz;
 
 %Plot origin and dipoles
 
-figure;
-plot3(0, 0, 0,'go','LineWidth',3);  %origin
-hold on;
-quiver3(R0(ndip,1), R0(ndip,2), R0(ndip,3), 0.05*Q(ndip,1), 0.05*Q(ndip,2), 0.05*Q(ndip,3), 'b-', 'LineWidth', 1);
-hold on;
-plot3(R0(ndip,1), R0(ndip,2), R0(ndip,3),'ro','LineWidth',2);
-hold on;
+% figure;
+% plot3(0, 0, 0,'go','LineWidth',3);  %origin
+% hold on;
+% quiver3(R0(ndip,1), R0(ndip,2), R0(ndip,3), 0.05*Q(ndip,1), 0.05*Q(ndip,2), 0.05*Q(ndip,3), 'b-', 'LineWidth', 1);
+% hold on;
+% plot3(R0(ndip,1), R0(ndip,2), R0(ndip,3),'ro','LineWidth',2);
+% hold on;
 
 %Plot sensors as scatter3
 
-scattersize = 50*ones(size(Br));
-scatter3(xp, yp, zp, scattersize, Bt, 'filled');
-colorbar;
-axis equal;
-xlabel('x axis');
-ylabel('y axis');
-zlabel('z axis');
+% scattersize = 50*ones(size(Br));
+% scatter3(xp, yp, zp, scattersize, Br, 'filled');
+% colorbar;
+% axis equal;
+% xlabel('x axis');
+% ylabel('y axis');
+% zlabel('z axis');
+
 Br_seq(:, ndip) = Br;
 Bt_seq(:, ndip) = Bt;
 Bp_seq(:, ndip) = Bp;
@@ -115,6 +121,8 @@ end
 %SAVE THAT DATA
 if (user_save_data == 1)
     ntime = now;
-    datastr = ['sequencedata/', 'B_', datestr(ntime, 1), '-', datestr(ntime,13), '.mat'];
+    datastr = ['sequencedata/', 'deg', num2str(round(t_const),'%04i'), 'data', '.mat'];
    save(datastr, 'Br_seq', 'Bt_seq', 'Bp_seq', 'xp', 'yp', 'zp', 'R0', 'Q');
+end
+
 end
