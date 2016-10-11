@@ -25,7 +25,12 @@ addpath('vfunc');
 % load('sequencedata/B_22-Aug-2016-13:33:20.mat');
 
 
-load('sequencedata/deg0070data.mat');
+load('sequencedata/B_23-Sep-2016-16:24:02.mat');
+xp = xp(1:328,:);
+yp = yp(1:328,:);
+zp = zp(1:328,:);
+
+
 d1 = sqrt(sum((R0(1,:) - R0(2,:)).^2))
 
 ndips = size(R0,1);
@@ -177,6 +182,9 @@ end
 B = B + 100*randn(nch, nt);
 
 C = cov(B');
+% noise_param = 0.01*max(svd(C)) - min(svd(C));
+% Cr = C + noise_param*eye(size(C));
+
 Cinv = inv(C);
 Z = zeros(sizr(1),sizr(1),sizr(1),n_theta);
 maxz = zeros(sizr(1),sizr(1),sizr(1));
@@ -285,8 +293,8 @@ for xprb = xrange
                 Lt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
                 L = Lt;
                 else
-                    Lr = Bx_tot.*erx + By_tot.*ery + Bz_tot.*erz;
-                    Lt = Bx_tot.*thx + By_tot.*thy + Bz_tot.*thz;
+                    Lr = Bx_tot(1:2:328).*erx(1:2:328) + By_tot(1:2:328).*ery(1:2:328) + Bz_tot(1:2:328).*erz(1:2:328);
+                    Lt = Bx_tot(2:2:328).*thx(2:2:328) + By_tot(2:2:328).*thy(2:2:328) + Bz_tot(2:2:328).*thz(2:2:328);
                     L = [Lr; Lt];
                 end
                 

@@ -25,7 +25,7 @@ addpath('vfunc');
 % load('sequencedata/B_22-Aug-2016-13:33:20.mat');
 
 
-load('sequencedata/deg0070data.mat');
+load('sequencedata/deg0040data.mat');
 d1 = sqrt(sum((R0(1,:) - R0(2,:)).^2))
 
 ndips = size(R0,1);

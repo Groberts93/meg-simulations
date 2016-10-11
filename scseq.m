@@ -1,6 +1,8 @@
 %Point B-field plotting
 %George Roberts 27/07/2016
 
+
+%HAVE EDITED NUMBER OF POINTS FOR COMPARISON PURPOSES - 23rd september 2016
 clear;
 
 %Add function paths
@@ -21,25 +23,37 @@ yp = 0.106 * (ypts/20);
 zp = 0.106 * (zpts/20);
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 
-% Q = [1 0 0; 1 0 0; 1 0 0];  %Point-like current dipole
-ndips = 2;
+
+ndips = 3;
 % Q = repmat([1 0 0], ndips, 1);
 r_const = 0.08;
 t_const = 70;
-Q = [sind(t_const), 0, -cosd(t_const); sind(t_const), 0, cosd(t_const)];
-Q = normrows(Q);
-Br_seq = zeros(size(xpts,1), ndips);
-Bt_seq = zeros(size(xpts,1), ndips);
-Bp_seq = zeros(size(xpts,1), ndips);
+% Q = [sind(t_const), 0, -cosd(t_const); sind(t_const), 0, cosd(t_const)];
 
-randR =  0.2 * (rand(10000,3) - 0.5);
-randR = randR(randR(:,3) > 0, :);
-loc_r = randR(:,1).^2 + randR(:,2).^2 + randR(:,3).^2;
-loc_r = sqrt(loc_r);
-randR = randR(loc_r < 0.1, :);
-randR = randR(1:ndips,:);
-% R0 = [-0.03 0.04 0.07; 0.05 0.00 0.07];
-R0 = [r_const*cosd(t_const), 0.00, r_const*sind(t_const); -r_const*cosd(t_const), 0.00, r_const*sind(t_const)]; 
+Q = [1 0 0; 1 0 0; 1 0 0];  %Point-like current dipole
+% Q = rand(ndips, 3) - 0.5;
+Q = normrows(Q);
+
+
+
+Br_seq = zeros(328, ndips);
+Bt_seq = zeros(328, ndips);
+Bp_seq = zeros(328, ndips);
+
+% randR =  0.2 * (rand(10000,3) - 0.5);
+% randR = randR(randR(:,3) > 0, :);
+% loc_r = randR(:,1).^2 + randR(:,2).^2 + randR(:,3).^2;
+% loc_r = sqrt(loc_r);
+% randR = randR(loc_r < 0.1, :);
+% randR = randR(1:ndips,:);
+
+R0 = [-0.03 0.04 0.07; -0.03 -0.04 0.07; 0.05 0.00 0.07];
+% R0 = [r_const*cosd(t_const), 0.00, r_const*sind(t_const); -r_const*cosd(t_const), 0.00, r_const*sind(t_const)]; 
+
+% Rrand = 0.12 * (rand(5000, 3) - 0.5);
+% Rrand = Rrand(Rrand(:,3) > 0, :);
+% R0 = Rrand(1:ndips, :);
+
 % R0 = randR;
 
 % anglestr = [' '];
@@ -106,9 +120,9 @@ axis equal;
 xlabel('x axis');
 ylabel('y axis');
 zlabel('z axis');
-Br_seq(:, ndip) = Br;
-Bt_seq(:, ndip) = Bt;
-Bp_seq(:, ndip) = Bp;
+Br_seq(:, ndip) = Br(1:328);
+Bt_seq(:, ndip) = Bt(1:328);
+Bp_seq(:, ndip) = Bp(1:328);
 
 end
 

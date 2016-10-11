@@ -1,8 +1,6 @@
 %Point B-field plotting
 %George Roberts 27/07/2016
 
-clear;
-
 %Add function paths
 addpath('vfunc');
 addpath('sfunc');
@@ -21,16 +19,21 @@ yp = 0.106 * (ypts/20);
 zp = 0.106 * (zpts/20);
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,30));
 
-t_const_vec = linspace(0,90,100);
+% t_const_vec = 90 - logspace(log10(0.1),log10(90),50);
+t_const_vec = linspace(90, 45, 30);
+n_pair = 1;
 
 
 for t_const = t_const_vec
 % Q = [1 0 0; 1 0 0; 1 0 0];  %Point-like current dipole
 ndips = 2;
 % Q = repmat([1 0 0], ndips, 1);
-r_const = 0.08;
+r_const = 0.09;
 % t_const = 85;
-Q = [sind(t_const), 0, -cosd(t_const); sind(t_const), 0, cosd(t_const)];
+Q = 2*(rand(2,3) - 0.5*ones(2,3));
+
+
+% Q = [sind(t_const), 0, -cosd(t_const); sind(t_const), 0, cosd(t_const)];
 Q = normrows(Q);
 Br_seq = zeros(size(xpts,1), ndips);
 Bt_seq = zeros(size(xpts,1), ndips);
@@ -121,8 +124,9 @@ end
 %SAVE THAT DATA
 if (user_save_data == 1)
     ntime = now;
-    datastr = ['sequencedata/', 'deg', num2str(round(t_const),'%04i'), 'data', '.mat'];
+    datastr = ['sequencedata/', 'deg', num2str(n_pair,'%04i'), 'data', '.mat'];
    save(datastr, 'Br_seq', 'Bt_seq', 'Bp_seq', 'xp', 'yp', 'zp', 'R0', 'Q');
 end
+n_pair = n_pair + 1;
 
 end

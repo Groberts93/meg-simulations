@@ -1,7 +1,6 @@
 %George Roberts - 28/07/16
 %Beamforming reconstruction of source power
 
-clear;
 
 addpath('bfunc');
 addpath('sfunc');
@@ -15,49 +14,49 @@ dlocz = 0.07;
 n_theta = 180;
 
 
-rtmode = 0;
+rtmode = 3;
 
-while (rtmode > 3 || rtmode < 1)
-    rtmode = input('Enter 1 to use radial components, 2 for tangential components, or 3 for both: ');
-end
+% while (rtmode > 3 || rtmode < 1)
+%     rtmode = input('Enter 1 to use radial components, 2 for tangential components, or 3 for both: ');
+% end
 
-bfmode = 0;
-while (bfmode > 3 || bfmode < 1)
-    bfmode = input('Choose mode.  Enter 1 for single voxel, 2 for xy slice at z plane, 3 for full xyz sweep: ');
-end
+bfmode = 1;
+% while (bfmode > 3 || bfmode < 1)
+%     bfmode = input('Choose mode.  Enter 1 for single voxel, 2 for xy slice at z plane, 3 for full xyz sweep: ');
+% end
 
-tcmode = -1;
-while (tcmode > 1 || tcmode < 0)
-    tcmode = input('Enter 1 to reconstruct time course at dipole points or 0 to not bother: ');
-end
+tcmode = 1;
+% while (tcmode > 1 || tcmode < 0)
+%     tcmode = input('Enter 1 to reconstruct time course at dipole points or 0 to not bother: ');
+% end
 
-if (bfmode == 1)
-    prompt = {'x coordinate:','y coordinate:' 'z coordinate'};
-    dlg_title = 'Single voxels mode.  Enter coordinates';
-    num_lines = 1;
-    defaultans = {num2str(dlocx),num2str(dlocy),num2str(dlocz)};
-    answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
-    dlocx = str2num(answer{1});
-    dlocy = str2num(answer{2});
-    dlocz = str2num(answer{3});
-    
-elseif (bfmode == 2)
-    prompt = {'z layer', 'ntheta'};
-    dlg_title = ['xy slice mode.  Enter z-layer from 1-', num2str(sizr(1)), ' and ntheta'];
-    num_lines = [1 50];
-    defaultans = {num2str(28), num2str(n_theta)};
-    answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
-    zslice = str2num(answer{1});
-    n_theta = str2num(answer{2});
-    
-elseif (bfmode == 3)
-    prompt = {'ntheta'};
-    dlg_title = ['Full xyz sweep mode.  Enter ntheta '];
-    num_lines = [1 50];
-    defaultans = {num2str(n_theta)};
-    answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
-    n_theta = str2num(answer{1});
-end
+% if (bfmode == 1)
+%     prompt = {'x coordinate:','y coordinate:' 'z coordinate'};
+%     dlg_title = 'Single voxels mode.  Enter coordinates';
+%     num_lines = 1;
+%     defaultans = {num2str(dlocx),num2str(dlocy),num2str(dlocz)};
+%     answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+%     dlocx = str2num(answer{1});
+%     dlocy = str2num(answer{2});
+%     dlocz = str2num(answer{3});
+%     
+% elseif (bfmode == 2)
+%     prompt = {'z layer', 'ntheta'};
+%     dlg_title = ['xy slice mode.  Enter z-layer from 1-', num2str(sizr(1)), ' and ntheta'];
+%     num_lines = [1 50];
+%     defaultans = {num2str(28), num2str(n_theta)};
+%     answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+%     zslice = str2num(answer{1});
+%     n_theta = str2num(answer{2});
+%     
+% elseif (bfmode == 3)
+%     prompt = {'ntheta'};
+%     dlg_title = ['Full xyz sweep mode.  Enter ntheta '];
+%     num_lines = [1 50];
+%     defaultans = {num2str(n_theta)};
+%     answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+%     n_theta = str2num(answer{1});
+% end
 
 
 
@@ -65,6 +64,7 @@ datastruct = dir('sequencedata/*deg*.mat');
 ldata = length(datastruct);
 d = zeros(ldata,1);
 n_corr = zeros(ldata,1);
+n_corr_big = zeros(ldata, 100);
 
 [rx, ry, rz] = meshgrid(linspace(-0.085,0.085,201));
 sizr = size(rx);
@@ -74,9 +74,10 @@ dlocy = -dlocy;  %Negate y coordinate.  Now you can enter dlocx, dlocy and dlocz
 %if they were the xyz coordinates of the dipole in sensorcalcs.m and
 %everything should square up with the original coordinates.  I think.
 
-
+ 
 theta_t = linspace(0,pi,n_theta);
 [vtx, vty, vtz] = dipolefangrid(rx, ry, rz, theta_t);
+% load('vts/vt_matrix.mat');  %Load precalculated dipole fan grid (100x)
 
 for ndata = 1:ldata
 
@@ -258,27 +259,27 @@ n_corr(ndata) = ccf(1,2);
 
 end
 
-figure;
-theta_data_max_z = squeeze(Z(xpt,ypt,zslice,:));
-plot(theta_data_max_z);
-[~, theta_max] = max(theta_data_max_z);
-disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
-
-figure;
-minz = min(min(min(min(Z))));
-maxmaxz = max(max(max(maxz)));
-v = [minz maxmaxz];
-h = imagesc(maxz(:,:,zslice), v);
-colorbar;
-
-hold on;
-plot(ytc(ztc == zslice), xtc(ztc == zslice), 'rx');
-
-
-figure;
-for i = 1:31
-    subplot(6,6,i);
-    imagesc(maxz(:,:,i),v);
-    hold on;
-    plot(ytc(ztc == i), xtc(ztc == i), 'rx','LineWidth',2);
-end
+% figure;
+% theta_data_max_z = squeeze(Z(xpt,ypt,zslice,:));
+% plot(theta_data_max_z);
+% [~, theta_max] = max(theta_data_max_z);
+% disp(['maximum power at theta = ', num2str(theta_max), ' degrees']);
+% 
+% figure;
+% minz = min(min(min(min(Z))));
+% maxmaxz = max(max(max(maxz)));
+% v = [minz maxmaxz];
+% h = imagesc(maxz(:,:,zslice), v);
+% colorbar;
+% 
+% hold on;
+% plot(ytc(ztc == zslice), xtc(ztc == zslice), 'rx');
+% 
+% 
+% figure;
+% for i = 1:31
+%     subplot(6,6,i);
+%     imagesc(maxz(:,:,i),v);
+%     hold on;
+%     plot(ytc(ztc == i), xtc(ztc == i), 'rx','LineWidth',2);
+% end
