@@ -25,10 +25,10 @@ addpath('vfunc');
 % load('sequencedata/B_22-Aug-2016-13:33:20.mat');
 
 
-load('sequencedata/B_23-Sep-2016-16:24:02.mat');
-xp = xp(1:328,:);
-yp = yp(1:328,:);
-zp = zp(1:328,:);
+load('sequencedata/deg0028data.mat');
+% xp = xp(1:328,:);
+% yp = yp(1:328,:);
+% zp = zp(1:328,:);
 
 
 d1 = sqrt(sum((R0(1,:) - R0(2,:)).^2))

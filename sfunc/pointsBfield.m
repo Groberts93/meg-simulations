@@ -11,7 +11,7 @@ assert(sizPts(2) == 3);
 
 %Constants
 mu_0 = 4*pi*1e-7;  %vacuum permeability
-Qmag = 5e-9;  %|Q| = 5nAm
+Qmag = 1e-9;  %|Q| = 1nAm
 
 Bx_tot = zeros(sizPts(1),1);
 By_tot = zeros(sizPts(1),1);

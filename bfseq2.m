@@ -25,13 +25,14 @@ addpath('vfunc');
 % load('sequencedata/B_22-Aug-2016-13:33:20.mat');
 
 
-load('sequencedata/B_26-Sep-2016-17:29:03.mat');
+%load('sequencedata/B_26-Sep-2016-17:29:03.mat');
+load('sequencedata/deg0028data.mat');
 
 
 
-xp = xp(1:328,:);
-yp = yp(1:328,:);
-zp = zp(1:328,:);
+% xp = xp(1:328,:);
+% yp = yp(1:328,:);
+% zp = zp(1:328,:);
 
 
 d1 = sqrt(sum((R0(1,:) - R0(2,:)).^2))
@@ -182,7 +183,7 @@ for ndip = 1:ndips
 end
 
 
-B = B + 200*randn(nch, nt);
+B = B + 40*randn(nch, nt);
 
 C = cov(B');
 % noise_param = 0.01*max(svd(C)) - min(svd(C));
